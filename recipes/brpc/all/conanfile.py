@@ -6,6 +6,7 @@ from conans.tools import Version
 
 class BRPCCppConan(ConanFile):
     name = "brpc"
+    version = "1.0.0-rc02"
     description = "Industrial-grade RPC framework used throughout Baidu, with 1,000,000+ instances and thousands kinds of services. `brpc` means `better RPC`."
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://brpc.apache.org/"
@@ -77,7 +78,10 @@ class BRPCCppConan(ConanFile):
         tools.replace_in_file(cmake_path,
                     ("PROTOC_LIB"), "protobuf_libprotoc_LIBS") 
         tools.replace_in_file(cmake_path,
-                    ("set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)"), "set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)") 
+                    ("set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)"), "set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)")
+        tools.replace_in_file(cmake_path,
+                ('set(DYNAMIC_LIB ${DYNAMIC_LIB} rt)'),
+                'set(DYNAMIC_LIB ${DYNAMIC_LIB} crc32c snappy  rt)')
 
     def _configure_cmake(self):
         if self._cmake:
@@ -89,6 +93,7 @@ class BRPCCppConan(ConanFile):
     def build(self):
         self._patch_source()
         cmake = self._configure_cmake()
+        
         cmake.build()
 
     def package(self):
